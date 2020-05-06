@@ -7,7 +7,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 #include <highgui.h>
-
+#include <opencv2/imgcodecs.hpp>
 #include <dirent.h>
 
 #include "ein.h"
@@ -396,7 +396,7 @@ streamImage * Camera::setIsbIdxYesLoadNoKick(int idx) {
       //cout << "setIsbIdx: this was loaded." << endl;
     } else {
       //cout << "setIsbIdx: this was not loaded." << endl;
-      tsi.image = imread(tsi.filename);
+      tsi.image = cv::imread(tsi.filename);
       if (tsi.image.data == NULL) {
 	tsi.loaded = 0;
 	cout << "Tried to set ISB index but image failed to load: " << tsi.filename << endl;
@@ -433,7 +433,7 @@ streamImage * Camera::setIsbIdx(int idx) {
       //cout << "setIsbIdx: this was loaded." << endl;
     } else {
       //cout << "setIsbIdx: this was not loaded." << endl;
-      tsi.image = imread(tsi.filename);
+      tsi.image = cv::imread(tsi.filename);
       if (tsi.image.data == NULL) {
 	tsi.loaded = 0;
 	cout << "Tried to set ISB index but image failed to load: " << tsi.filename << endl;
@@ -553,7 +553,7 @@ void Camera::writeImage(Mat im, int classToStreamIdx, double now) {
   std::vector<int> args;
   args.push_back(CV_IMWRITE_PNG_COMPRESSION);
   args.push_back(ms->config.globalPngCompression);
-  imwrite(png_path, im, args);
+  cv::imwrite(png_path, im, args);
 
   // may want to save additional camera parameters
   FileStorage fsvO;
@@ -595,7 +595,7 @@ void Camera::writeImageBatchAsClass(int classToStreamIdx) {
   for (int i = 0; i < tng; i++) {
     streamImage &tsi = streamImageBuffer[i];
     if (tsi.image.data == NULL) {
-      tsi.image = imread(tsi.filename);
+      tsi.image = cv::imread(tsi.filename);
       if (tsi.image.data == NULL) {
         cout << " Failed to load " << tsi.filename << endl;
         tsi.loaded = 0;
@@ -894,7 +894,7 @@ void Camera::saveGripperMask() {
 }
 void Camera::saveGripperMask(string filename) {
   CONSOLE(ms, "Saving gripper mask to " << filename);
-  bool result = imwrite(filename, 255*gripperMask);
+  bool result = cv::imwrite(filename, 255*gripperMask);
   if (! result) {
     CONSOLE_ERROR(ms, "Could not save gripper mask.");
   }
@@ -905,7 +905,7 @@ void Camera::loadGripperMask() {
 }
 void Camera::loadGripperMask(string filename) {
   CONSOLE(ms, "Loading gripper mask from " << filename << "...");
-  Mat tmpMask = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+  Mat tmpMask = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
   if (tmpMask.data == NULL) {
     CONSOLE_ERROR(ms, "Could not load gripper mask; will use empty one.");
   }

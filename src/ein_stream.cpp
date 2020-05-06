@@ -3,14 +3,14 @@
 #include "camera.h"
 #include "qtgui/streamviewerwindow.h"
 #include <highgui.h>
-
+#include <opencv2/imgcodecs.hpp>
 
 int loadStreamImage(MachineState * ms, streamImage * tsi) {
   if (tsi == NULL) {
     return -1;
   }
   if (tsi->image.data == NULL) {
-    tsi->image = imread(tsi->filename);
+    tsi->image = cv::imread(tsi->filename);
     if (tsi->image.data == NULL) {
       CONSOLE_ERROR(ms, " Failed to load " << tsi->filename);
       tsi->loaded = 0;
@@ -595,7 +595,7 @@ virtual void execute(MachineState * ms)       {
       std::vector<int> args;
       args.push_back(CV_IMWRITE_PNG_COMPRESSION);
       args.push_back(ms->config.globalPngCompression);
-      imwrite(buf.str(), crop, args);
+      cv::imwrite(buf.str(), crop, args);
       ms->config.cropCounter++;
     }
   } else {
@@ -654,7 +654,7 @@ cout << "  saving to " << buf.str() << " with this_crops_path " << this_crops_pa
       std::vector<int> args;
       args.push_back(CV_IMWRITE_PNG_COMPRESSION);
       args.push_back(ms->config.globalPngCompression);
-      imwrite(buf.str(), crop, args);
+      cv::imwrite(buf.str(), crop, args);
       ms->config.cropCounter++;
     }
   } else {

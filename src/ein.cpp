@@ -29,7 +29,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <signal.h>
-
+#include <opencv2/imgproc.hpp>
 #include <ros/package.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <object_recognition_msgs/RecognizedObjectArray.h>
@@ -37,8 +37,8 @@
 
 #include <cv.h>
 #include <ml.h>
-#include <opencv2/gpu/gpu.hpp>
-
+#include <opencv2/core/cuda.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 //#define DEBUG_RING_BUFFER
 
@@ -639,13 +639,13 @@ void writeThumbnail(MachineState * ms, int idx, string thumbnail_file_path) {
   {
     string loadPath = thumbnail_file_path + "/ein/servoImages/aerialHeight0PreGradients.png";
     string outPath = thumbnail_file_path + "/thumbnail.png";
-    Mat tmp = imread(loadPath);
+    Mat tmp = cv::imread(loadPath);
 
     std::vector<int> args;
     args.push_back(CV_IMWRITE_PNG_COMPRESSION);
     args.push_back(ms->config.globalPngCompression);
 
-    imwrite(outPath, tmp, args);
+    cv::imwrite(outPath, tmp, args);
   }
 }
 
@@ -2361,13 +2361,13 @@ void MachineState::rangeCallback(const sensor_msgs::Range& range) {
       char buff[256];
       sprintf(buff, "            Hz: %.2f", ms->config.aveFrequency);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
     }
     {
       char buff[256];
       sprintf(buff, "Hz: %.2f", ms->config.aveFrequencyRange);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
     }
   }
 
@@ -3438,7 +3438,7 @@ void renderObjectMapViewOneArm(MachineState * ms) {
       rectangle(ms->config.objectMapViewerImage, outTop, outBot, 
 		CV_RGB(0, 255, 0));
 
-      putText(ms->config.objectMapViewerImage, sprite.name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 255, 196), 2.0);
+      cv::putText(ms->config.objectMapViewerImage, sprite.name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 255, 196), 2.0);
     }
   }
   // draw blue boxes
@@ -3505,7 +3505,7 @@ void renderObjectMapViewOneArm(MachineState * ms) {
               CV_RGB(nonBlueAmount, nonBlueAmount, 128+nonBlueAmount));
     }
 
-    putText(ms->config.objectMapViewerImage, class_name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 196, 255), 2.0);
+    cv::putText(ms->config.objectMapViewerImage, class_name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 196, 255), 2.0);
   }
 
   cv::Scalar color;
@@ -3648,13 +3648,13 @@ void renderRangeogramView(MachineState * ms) {
       char buff[256];
       sprintf(buff, "            Hz: %.2f", ms->config.aveFrequency);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
     }
     {
       char buff[256];
       sprintf(buff, "Hz: %.2f", ms->config.aveFrequencyRange);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
     }
   }
   ms->config.rangeogramWindow->updateImage(ms->config.rangeogramImage);
@@ -5870,7 +5870,7 @@ void bowGetFeatures(MachineState * ms, std::string classDir, const char *classNa
         char filename[1024];
         sprintf(filename, "%s%s/ein/detectionCrops/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -5932,7 +5932,7 @@ void kNNGetFeatures(MachineState * ms, std::string classDir, const char *classNa
         char filename[1024];
         sprintf(filename, "%s%s/ein/detectionCrops/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -6221,7 +6221,7 @@ void posekNNGetFeatures(MachineState * ms, std::string classDir, const char *cla
         char filename[1024];
         sprintf(filename, "%s%s/rgbPose/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -6566,7 +6566,7 @@ void goFindBlueBoxes(MachineState * ms) {
   delete gBoxComponentLabels;
 }
 
-
+/*
 void goClassifyBlueBoxes(MachineState * ms) {
   //cout << "entered gCBB()" << endl; cout.flush();
   Size sz = ms->config.objectViewerImage.size();
@@ -6665,7 +6665,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
       if (!descriptors.empty() && !keypoints.empty()) {
       
 	appendColorHist(yCrCb_image, keypoints, descriptors, descriptors2);
-	label = ms->config.kNN->find_nearest(descriptors2, param_numNeighbors);
+	label = ms->config.kNN->findNearest(descriptors2, param_numNeighbors);
 	ms->config.bLabels[c] = label;
       }
     } else if (ms->config.chosen_feature == OPPONENTSIFTBOW_GLOBALCOLOR_HIST) {
@@ -6714,8 +6714,8 @@ void goClassifyBlueBoxes(MachineState * ms) {
       if (!descriptors.empty() && !keypoints.empty()) {
       
 	//appendColorHist(yCrCb_image, keypoints, descriptors, descriptors2);
-	//label = kNN->find_nearest(descriptors2,k);
-	label = ms->config.kNN->find_nearest(descriptors, param_numNeighbors);
+	//label = kNN->findNearest(descriptors2,k);
+	label = ms->config.kNN->findNearest(descriptors, param_numNeighbors);
 	ms->config.bLabels[c] = label;
       }
     } else if (ms->config.chosen_feature == GRADIENT) {
@@ -6775,7 +6775,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 	}
       }
 
-      label = ms->config.kNN->find_nearest(descriptorsG, param_numNeighbors);
+      label = ms->config.kNN->findNearest(descriptorsG, param_numNeighbors);
       ms->config.bLabels[c] = label;
     } else if (ms->config.chosen_feature == OPPONENT_COLOR_GRADIENT) {
       processImage(crop, gray_image, yCrCb_image, ms->config.sobel_sigma);
@@ -6902,7 +6902,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 	}
       }
 
-      label = ms->config.kNN->find_nearest(descriptorsCbCr, param_numNeighbors);
+      label = ms->config.kNN->findNearest(descriptorsCbCr, param_numNeighbors);
       ms->config.bLabels[c] = label;
     }
 
@@ -6981,7 +6981,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 
 }
 
-
+*/
 
 void loadROSParamsFromArgs(MachineState * ms) {
   ros::NodeHandle nh("~");
@@ -7055,14 +7055,14 @@ void nodeInit(MachineState * ms) {
 
 }
 
-
+/*
 void detectorsInit(MachineState * ms) {
 
-  // XXX TODO this function should reinit the structures if this function is to be called multiple times
+   XXX TODO this function should reinit the structures if this function is to be called multiple times
 
-  // SIFT 
-  //ms->config.detector = new SiftFeatureDetector(0, 3, 0.04, 10, 1.6);
-  //cout << "ms->config.chosen_feature: " << ms->config.chosen_feature << endl;
+   SIFT 
+  ms->config.detector = new SiftFeatureDetector(0, 3, 0.04, 10, 1.6);
+  cout << "ms->config.chosen_feature: " << ms->config.chosen_feature << endl;
   if (ms->config.detector == NULL)
     ms->config.detector = new FastFeatureDetector(4);
 
@@ -7083,10 +7083,10 @@ void detectorsInit(MachineState * ms) {
     ms->config.retrain_vocab = 0;
   }
 
-  // BOW time
+   BOW time
   ms->config.bowTrainer = new BOWKMeansTrainer(ms->config.vocabNumWords);
 
-  // read the class image data
+   read the class image data
   string dot(".");
   string dotdot("..");
 
@@ -7100,12 +7100,12 @@ void detectorsInit(MachineState * ms) {
   cout << "featuresPath: " << featuresPath << endl;
   cout << "labelsPath: " << labelsPath << endl;
 
-  string bufstr; // Have a buffer string
+  string bufstr;  Have a buffer string
 
   int numCachedClasses = 0;
 
   if (ms->config.rewrite_labels) {
-    // load cached labels 
+     load cached labels 
     vector<string> classCacheLabels;
     vector<string> classCachePoseModels;
     if (ms->config.cache_prefix.size() > 0) {
@@ -7170,7 +7170,7 @@ void detectorsInit(MachineState * ms) {
     if (ms->config.grandTotalDescriptors < ms->config.vocabNumWords) {
       cout << "Fewer descriptors than words in the vocab!?... This will never work, cease training. Duplicate RGB images if you must." << endl;
       cout << "Label file may now be corrupt!" << endl;
-      // TODO XXX we shouldn't write any files until we know it will succeed
+       TODO XXX we shouldn't write any files until we know it will succeed
       return;
     }
 
@@ -7208,7 +7208,7 @@ void detectorsInit(MachineState * ms) {
   ms->config.classQuaternions.resize(ms->config.numClasses);
 
   if (ms->config.reextract_knn) {
-    //for (int i = 0; i < numNewClasses; i++) 
+    for (int i = 0; i < numNewClasses; i++) 
     for (int i = numCachedClasses; i < ms->config.numClasses; i++) 
     {
       cout << "Getting kNN features for class " << ms->config.classLabels[i] 
@@ -7221,8 +7221,8 @@ void detectorsInit(MachineState * ms) {
       }
     }
 
-    // load cached kNN features 
-    // XXX experimental handling of G pose models
+     load cached kNN features 
+     XXX experimental handling of G pose models
     Mat kNNCachefeatures;
     Mat kNNCachelabels;
     if (ms->config.cache_prefix.size() > 0) {
@@ -7257,7 +7257,7 @@ void detectorsInit(MachineState * ms) {
     fsfO << "features" << kNNfeatures;
     fsfO << "labels" << kNNlabels;
 
-    // TODO also cache the features for the pose models
+     TODO also cache the features for the pose models
 
     for (int i = 0; i < ms->config.numClasses; i++) {
       if (ms->config.classPoseModels[i].compare("G") == 0) {
@@ -7305,7 +7305,7 @@ void detectorsInit(MachineState * ms) {
     // seeing this can be distressing
     //cout << "There is a problem with kNN features, cannot initialize detector and files may be corrupt." << endl;
   } else {
-    ms->config.kNN = new CvKNearest(kNNfeatures, kNNlabels);
+    ms->config.kNN = new cv::ml::KNearest(kNNfeatures, kNNlabels);
     cout << "done." << endl;
     for (int i = 0; i < ms->config.numClasses; i++) {
       if (ms->config.classPoseModels[i].compare("G") == 0) {
@@ -7316,7 +7316,7 @@ void detectorsInit(MachineState * ms) {
     }
   }
 }
-
+*/
 
 void tryToLoadRangeMap(MachineState * ms, std::string classDir, const char *className, int i) {
 
@@ -8706,7 +8706,7 @@ void initializeArm(MachineState * ms, string left_or_right_arm) {
 
 
   nodeInit(ms);
-  detectorsInit(ms);
+  //detectorsInit(ms);
   irInit(ms);
 
 
@@ -8931,6 +8931,8 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  cout << "((1))";
+
   string left_or_right_arm = argv[2];
 
   vector<string> arm_names;
@@ -9037,7 +9039,7 @@ int main(int argc, char **argv) {
   //timer->start(0);
   qRegisterMetaType<Mat>("Mat");
 
-  int cudaCount = gpu::getCudaEnabledDeviceCount();
+  int cudaCount = cuda::getCudaEnabledDeviceCount();
   cout << "cuda count: " << cudaCount << endl;;
 
   cv::redirectError(opencvError, NULL, NULL);

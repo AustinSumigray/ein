@@ -35,7 +35,7 @@ void doSaveImage(MachineState * ms, QMainWindow * parent, const Mat & image) {
       boost::algorithm::ends_with(fileName, "ppm") || 
       boost::algorithm::ends_with(fileName, "tif") || 
       boost::algorithm::ends_with(fileName, "bmp")) {
-    imwrite(fileName, dst);
+    cv::imwrite(fileName, dst);
   } else {
     CONSOLE_ERROR(ms, "Bad extension for " << fileName << endl);
   }

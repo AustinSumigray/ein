@@ -43,8 +43,8 @@ class Camera;
 #include <rosgraph_msgs/Log.h>
 
 #include <cv.h>
-#include <ml.h>
-
+#include <opencv2/ml.hpp>
+#include <opencv2/features2d.hpp>
 
 #include <ein/EinState.h>
 #include "distributions.h"
@@ -1083,7 +1083,7 @@ class EinConfig {
 
   vector<string> classLabels; 
   vector<string> classPoseModels;
-  vector<CvKNearest*> classPosekNNs;
+  vector<cv::ml::KNearest*> classPosekNNs;
   vector<Mat> classPosekNNfeatures;
   vector<Mat> classPosekNNlabels;
   vector< vector< cv::Vec<double,4> > > classQuaternions;
@@ -1094,7 +1094,7 @@ class EinConfig {
   DescriptorExtractor *extractor = NULL;
   BOWKMeansTrainer *bowTrainer = NULL; 
   BOWImgDescriptorExtractor *bowExtractor = NULL;
-  CvKNearest *kNN = NULL;
+  cv::ml::KNearest *kNN = NULL;
 
 
   std::string class_crops_path;

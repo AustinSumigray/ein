@@ -20,7 +20,7 @@ using namespace Eigen;
 
 #include <cv.h>
 #include <Eigen/Geometry> 
-
+#include <opencv2/imgproc.hpp>
 
 // slu
 #include "slu/math2d.h"
@@ -353,10 +353,10 @@ bool isFiniteNumber(double x);
 void appendColorHist(Mat& yCrCb_image, vector<KeyPoint>& keypoints, Mat& descriptors, Mat& descriptors2);
 void processImage(Mat &image, Mat& gray_image, Mat& yCrCb_image, double sigma);
 
-void bowGetFeatures(MachineState * ms, std::string classDir, const char *className, double sigma, int keypointPeriod, int * grandTotalDescriptors, DescriptorExtractor * extractor, BOWKMeansTrainer * bowTrainer);
+void bowGetFeatures(MachineState * ms, std::string classDir, const char *className, double sigma, int keypointPeriod, int * grandTotalDescriptors, cv::DescriptorExtractor * extractor, cv::BOWKMeansTrainer * bowTrainer);
 void kNNGetFeatures(MachineState * ms, std::string classDir, const char *className, int label, double sigma, Mat &kNNfeatures, Mat &kNNlabels, double sobel_sigma);
 void posekNNGetFeatures(MachineState * ms, std::string classDir, const char *className, double sigma, Mat &kNNfeatures, Mat &kNNlabels,
-                        vector< cv::Vec<double,4> >& classQuaternions, int keypointPeriod, BOWImgDescriptorExtractor *bowExtractor, int lIndexStart = 0);
+                        vector< cv::Vec<double,4> >& classQuaternions, int keypointPeriod, cv::BOWImgDescriptorExtractor *bowExtractor, int lIndexStart = 0);
 
 
 void goFindBlueBoxes(MachineState * ms);

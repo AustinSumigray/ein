@@ -1,4 +1,4 @@
-
+#include <opencv2/imgproc.hpp>
 #include "ein_words.h"
 #include "ein.h"
 #include "camera.h"
@@ -1096,9 +1096,9 @@ virtual void execute(MachineState * ms) {
       double scale = 1.0;
       Point center = Point(sz.width/2, sz.height/2);
 
-      Mat un_rot_mat = getRotationMatrix2D( center, angle, scale );
+      Mat un_rot_mat = cv::getRotationMatrix2D( center, angle, scale );
 
-      Mat trans_mat = getRotationMatrix2D( center, angle, scale );
+      Mat trans_mat = cv::getRotationMatrix2D( center, angle, scale );
       trans_mat.at<double>(0,0) = 1;
       trans_mat.at<double>(1,1) = 1;
       trans_mat.at<double>(0,1) = 0;
@@ -1109,9 +1109,9 @@ virtual void execute(MachineState * ms) {
       //Mat rotatedSpriteImage;
       //warpAffine(sprite.image, rotatedSpriteImage, un_rot_mat, sz, INTER_LINEAR, BORDER_REPLICATE);
       Mat translatedSpriteImage;
-      warpAffine(sprite.image, translatedSpriteImage, trans_mat, sz, INTER_LINEAR, BORDER_REPLICATE);
+      cv::warpAffine(sprite.image, translatedSpriteImage, trans_mat, sz, cv::INTER_LINEAR, BORDER_REPLICATE);
       Mat rotatedSpriteImage;
-      warpAffine(translatedSpriteImage, rotatedSpriteImage, un_rot_mat, sz, INTER_LINEAR, BORDER_REPLICATE);
+      cv::warpAffine(translatedSpriteImage, rotatedSpriteImage, un_rot_mat, sz, cv::INTER_LINEAR, BORDER_REPLICATE);
       sprite.image = rotatedSpriteImage;
     }
 

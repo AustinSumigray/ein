@@ -1,8 +1,9 @@
 #include <object_recognition_msgs/RecognizedObjectArray.h>
 
+#include <opencv2/imgproc.hpp>
 #include "eigen_util.h"
 #include "ein_words.h"
-
+#include <opencv2/imgcodecs.hpp>
 #include "ein.h"
 #include <dirent.h>
 #include "camera.h"
@@ -240,7 +241,7 @@ virtual void execute(MachineState * ms)       {
   }
 
   //  detectorsInit() will reset numClasses
-  detectorsInit(ms);
+  //detectorsInit(ms);
 
 
   // XXX reset anything else
@@ -589,7 +590,7 @@ virtual void execute(MachineState * ms)       {
   }
 
   //  detectorsInit() will reset numClasses
-  detectorsInit(ms);
+  //detectorsInit(ms);
 }
 END_WORD
 REGISTER_WORD(TrainModelsFromLabels)
@@ -624,7 +625,7 @@ virtual void execute(MachineState * ms)       {
 }
 END_WORD
 REGISTER_WORD(TrainAndWriteFocusedClassKnn)
-
+/*
 WORD(CreateCachedClassifierFromClassLabels)
 virtual void execute(MachineState * ms)       {
 
@@ -705,7 +706,7 @@ virtual void execute(MachineState * ms)       {
 }
 END_WORD
 REGISTER_WORD(CreateCachedClassifierFromClassLabels)
-
+*/
 WORD(VisionCycleNoClassify)
 CODE(196721)     // capslock + Q
 virtual void execute(MachineState * ms)       {
@@ -1342,8 +1343,8 @@ virtual void execute(MachineState * ms) {
 
   ms->config.meanViewerWindow->updateImage(camera->gripperMaskMean);
   camera->gripperMaskCounts += 1;
-  Mat firstFloat; Mat firstYCBCR;  camera->gripperMaskFirstContrast.convertTo(firstFloat, CV_32FC3); cvtColor(firstFloat, firstYCBCR, CV_BGR2YCrCb);
-  Mat secondFloat; Mat secondYCBCR;  camera->gripperMaskSecondContrast.convertTo(secondFloat, CV_32FC3); cvtColor(secondFloat, secondYCBCR, CV_BGR2YCrCb);
+  Mat firstFloat; Mat firstYCBCR;  camera->gripperMaskFirstContrast.convertTo(firstFloat, CV_32FC3); cv::cvtColor(firstFloat, firstYCBCR, CV_BGR2YCrCb);
+  Mat secondFloat; Mat secondYCBCR;  camera->gripperMaskSecondContrast.convertTo(secondFloat, CV_32FC3); cv::cvtColor(secondFloat, secondYCBCR, CV_BGR2YCrCb);
 
   Mat varianceImage = camera->gripperMaskFirstContrast.clone();
 
