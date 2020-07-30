@@ -4,9 +4,9 @@
 
 #include <cv.h>
 #include <ml.h>
-#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/core/cuda.hpp>
 
 using namespace cv;
-
-vector<Rect> faceDetectAndDisplay(string windowName, Mat frame ) ;
+using namespace cuda;
+std::vector<Rect> faceDetectAndDisplay(std::string windowName, Mat frame ) ;
 #endif /* _FACES_H_ */

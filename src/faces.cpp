@@ -2,16 +2,17 @@
 #include "ein_util.h"
 #include "eePose.h"
 #include <ros/console.h>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc.hpp>
 
-
-string face_cascade_name = "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml";
-string eyes_cascade_name = "/usr/share/opencv/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+std::string face_cascade_name = "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml";
+std::string eyes_cascade_name = "/usr/share/opencv/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 int initialized = 0;
 RNG rng(12345);
 
-vector<Rect> faceDetectAndDisplay(string windowName, Mat frame ) {
+std::vector<Rect> faceDetectAndDisplay(std::string windowName, Mat frame ) {
   if (!initialized) {
     cout << "Initializing faces." << face_cascade_name << endl;
     if (!face_cascade.load(face_cascade_name)) {

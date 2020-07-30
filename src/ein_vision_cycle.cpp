@@ -3,7 +3,7 @@
 #include "ein_words.h"
 #include "ein.h"
 #include "qtgui/einwindow.h"
-#include "opencv2/contrib/contrib.hpp"
+//#include "opencv2/contrib/contrib.hpp"
 #include "camera.h"
 
 namespace ein_words {
@@ -347,7 +347,7 @@ CODE(131123) // capslock + 3
 virtual void execute(MachineState * ms) {
   ms->config.lastVisionCycle = ros::Time::now();
   ms->config.oscilStart = ros::Time::now();
-  goClassifyBlueBoxes(ms);
+  //goClassifyBlueBoxes(ms);
 }
 END_WORD
 REGISTER_WORD(GoClassifyBlueBoxes)
@@ -484,7 +484,7 @@ virtual void execute(MachineState * ms) {
 }
 END_WORD
 REGISTER_WORD(StereoPairCache2)
-
+/*
 WORD(StereoCalculate)
 virtual void execute(MachineState * ms) {
   // simplifying assumption that the movement between the two views
@@ -516,7 +516,7 @@ virtual void execute(MachineState * ms) {
 
   Mat minDifferenceValues(sz, CV_64F);
   minDifferenceValues = VERYBIGNUMBER;
-
+*/
 /*
   for (int d = 0; d < disparityMax; d++) {
     Mat shiftedDifference(sz, CV_64F);
@@ -554,7 +554,7 @@ virtual void execute(MachineState * ms) {
     }
   }
 */
-
+/*
   StereoVar myStereoVar;
   // set parameters for disparity
   myStereoVar.levels = 3;
@@ -586,14 +586,17 @@ virtual void execute(MachineState * ms) {
       sIm2Byte.at<Vec3b>(y,x)[0] = floor(sIm2.at<Vec3d>(y,x)[0]);
       sIm2Byte.at<Vec3b>(y,x)[1] = floor(sIm2.at<Vec3d>(y,x)[1]);
       sIm2Byte.at<Vec3b>(y,x)[2] = floor(sIm2.at<Vec3d>(y,x)[2]);
+*/
 //cout << sIm2.at<Vec3d>(y,x)[0] << " ";
+/*
     }
   }
 
   myStereoVar(sIm1Byte, sIm2Byte, dispOut);
   ms->config.stereoDisparity = dispOut;
+*/
 //  cvFindStereoCorrespondenceGC(const CvArr *left, const CvArr *right, CvArr *disparityLeft, CvArr *disparityRight, CvStereoGCState *state, int useDisparityGuess = 0)
-
+/*
   double eff = ms->config.stereoFocal;
   double bee = ms->config.stereoBaseline;
 
@@ -608,7 +611,8 @@ virtual void execute(MachineState * ms) {
   }
 }
 END_WORD
-REGISTER_WORD(StereoCalculate)
+*/
+/*REGISTER_WORD(StereoCalculate)
 
 WORD(StereoDisplay)
 virtual void execute(MachineState * ms) {
@@ -638,8 +642,9 @@ virtual void execute(MachineState * ms) {
   }
 }
 END_WORD
-REGISTER_WORD(StereoDisplay)
 
+REGISTER_WORD(StereoDisplay)
+*/
 WORD(MapWaypoints)
 virtual string description() {
   return "Maps objects at locations specified by EePoseWords underneath.";

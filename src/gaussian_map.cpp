@@ -1,7 +1,9 @@
-
+#include <opencv2/highgui.hpp>
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include "gaussian_map.h"
 #include "ein_words.h"
 #include "ein.h"
@@ -775,7 +777,7 @@ void GaussianMap::rgbMuToBgrMat(Mat& out) {
   Mat newImage;
   rgbMuToMat(newImage);
   out = newImage.clone();  
-  cvtColor(newImage, out, CV_YCrCb2BGR);
+  cv::cvtColor(newImage, out, CV_YCrCb2BGR);
 }
 
 void GaussianMap::rgbDiscrepancyMuToMat(MachineState * ms, Mat& out) {
@@ -3970,7 +3972,7 @@ virtual void execute(MachineState * ms) {
   ms->config.scene->observed_map->rgbMuToMat(observedImage);
   //observedImage = observedImage / 255.0;
   Mat rgb = observedImage.clone();  
-  cvtColor(observedImage, rgb, CV_YCrCb2BGR);
+  cv::cvtColor(observedImage, rgb, CV_YCrCb2BGR);
   if (ms->config.showgui) {
     ms->config.observedWindow->updateImage(rgb);
   }
@@ -4224,7 +4226,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
 
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -4372,7 +4374,7 @@ virtual void execute(MachineState * ms) {
     Mat image;
     ms->config.scene->predicted_map->rgbMuToMat(image);
     Mat rgb = image.clone();  
-    cvtColor(image, rgb, CV_YCrCb2BGR);
+    cv::cvtColor(image, rgb, CV_YCrCb2BGR);
     ms->config.predictedWindow->updateImage(rgb);
   }
 
@@ -5739,7 +5741,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -5946,7 +5948,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -6112,7 +6114,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -6338,7 +6340,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -6564,7 +6566,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -6798,7 +6800,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -7031,7 +7033,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -7266,7 +7268,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -7549,7 +7551,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
 
@@ -7802,7 +7804,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
 
@@ -8120,7 +8122,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
 
@@ -8438,7 +8440,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
 
@@ -8756,7 +8758,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
 
@@ -8981,7 +8983,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -9193,7 +9195,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -9461,7 +9463,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -9599,7 +9601,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -10054,7 +10056,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -10868,9 +10870,9 @@ virtual void execute(MachineState * ms) {
   Mat image;
   ms->config.scene->observed_map->rgbMuToMat(image);
   Mat rgb = image.clone();  
-  cvtColor(image, rgb, CV_YCrCb2BGR);
+  cv::cvtColor(image, rgb, CV_YCrCb2BGR);
   cout << "Writing " << fname << endl;
-  imwrite(fname, rgb);
+  cv::imwrite(fname, rgb);
 
 }
 END_WORD
@@ -10883,7 +10885,7 @@ virtual void execute(MachineState * ms) {
   
   Mat image = ms->config.scene->discrepancy_density;
   cout << "Writing " << fname << endl;
-  imwrite(fname, 255.0 * image);
+  cv::imwrite(fname, 255.0 * image);
 
 }
 END_WORD
@@ -11021,8 +11023,8 @@ virtual void execute(MachineState * ms) {
 	Mat toConvert;
 	Mat toWrite;
 	this_crop->rgbMuToMat(toConvert);
-	cvtColor(toConvert, toWrite, CV_YCrCb2BGR);
-	imwrite(ss.str(), toWrite);
+	cv::cvtColor(toConvert, toWrite, CV_YCrCb2BGR);
+	cv::imwrite(ss.str(), toWrite);
       }
     }
   } else {
@@ -11165,8 +11167,8 @@ virtual void execute(MachineState * ms) {
     Mat toConvert;
     Mat toWrite;
     ms->config.depth_maps[i]->rgbMuToMat(toConvert);
-    cvtColor(toConvert, toWrite, CV_YCrCb2BGR);
-    imwrite(ss.str(), toWrite);
+    cv::cvtColor(toConvert, toWrite, CV_YCrCb2BGR);
+    cv::imwrite(ss.str(), toWrite);
   }
 }
 END_WORD
@@ -11634,7 +11636,7 @@ virtual void execute(MachineState * ms) {
 
   Mat wristViewYCbCr = bufferImage.clone();
 
-  cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
+  cv::cvtColor(bufferImage, wristViewYCbCr, CV_BGR2YCrCb);
   
   Size sz = bufferImage.size();
   int imW = sz.width;
@@ -11834,7 +11836,7 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
       
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       
@@ -11999,8 +12001,8 @@ virtual void execute(MachineState * ms) {
       
       Mat wristViewYCbCr = tsi->image.clone();
 
-      imshow("image", wristViewYCbCr);
-      cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
+      cv::imshow("image", wristViewYCbCr);
+      cv::cvtColor(tsi->image, wristViewYCbCr, CV_BGR2YCrCb);
       int numPixels = 0;
       int numNulls = 0;
       

@@ -8729,6 +8729,175 @@ void initializeArm(MachineState * ms, string left_or_right_arm) {
 
 }
 
+void initializeArmGui(MachineState * ms, MainWindow * einMainWindow) {
+
+//  ms->config.gripperMaskFirstContrastWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskFirstContrastWindow->setWindowTitle("Gripper Mask First Contrast " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskFirstContrastWindow);
+//
+//  ms->config.gripperMaskSecondContrastWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskSecondContrastWindow->setWindowTitle("Gripper Mask Second Contrast " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskSecondContrastWindow);
+//
+//  ms->config.gripperMaskDifferenceWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskDifferenceWindow->setWindowTitle("Gripper Mask Difference " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskDifferenceWindow);
+//
+//  ms->config.gripperMaskVarianceWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskVarianceWindow->setWindowTitle("Gripper Mask Variance " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskVarianceWindow);
+//
+//  ms->config.gripperMaskMeanWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskMeanWindow->setWindowTitle("Gripper Mask Mean " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskMeanWindow);
+//
+//  ms->config.gripperMaskSquaresWindow = new EinWindow(NULL, ms);
+//  ms->config.gripperMaskSquaresWindow->setWindowTitle("Gripper Mask Squares " + ms->config.left_or_right_arm);
+//  einMainWindow->addWindow(ms->config.gripperMaskSquaresWindow);
+
+  ms->config.dogSnoutViewWindow = new EinWindow(NULL, ms);
+  ms->config.dogSnoutViewWindow->setWindowTitle("Dog Snout View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.dogSnoutViewWindow);
+  ms->config.dogSnoutViewWindow->setVisible(true);
+
+
+  ms->config.rangeogramWindow = new EinWindow(NULL, ms);
+  ms->config.rangeogramWindow->setWindowTitle("Rangeogram View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.rangeogramWindow);
+
+  ms->config.wristViewWindow = new EinWindow(NULL, ms);
+  ms->config.wristViewWindow->setWindowTitle("Wrist View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.wristViewWindow);
+  ms->config.wristViewWindow->setMouseCallBack(pilotCallbackFunc, ms);
+
+  ms->config.renderedWristViewWindow = new EinWindow(NULL, ms);
+  ms->config.renderedWristViewWindow->setWindowTitle("Rendered Wrist View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.renderedWristViewWindow);
+  ms->config.renderedWristViewWindow->setMouseCallBack(pilotCallbackFunc, ms);
+
+
+
+  ms->config.coreViewWindow = new EinWindow(NULL, ms);
+  ms->config.coreViewWindow->setWindowTitle("Core View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.coreViewWindow);
+  
+  
+  ms->config.faceViewWindow = new EinWindow(NULL, ms);
+  ms->config.faceViewWindow->setWindowTitle("Face View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.faceViewWindow);
+  
+
+  
+
+  ms->config.mapBackgroundViewWindow = new EinWindow(NULL, ms);
+  ms->config.mapBackgroundViewWindow->setWindowTitle("Hi Color Range Map View " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.mapBackgroundViewWindow);
+
+
+  ms->config.meanViewerWindow = new EinWindow(NULL, ms);
+  ms->config.meanViewerWindow->setWindowTitle("Mean Viewer " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.meanViewerWindow);
+
+  ms->config.objectViewerWindow = new EinWindow(NULL, ms);
+  ms->config.objectViewerWindow->setWindowTitle("Object Viewer " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.objectViewerWindow);
+
+  ms->config.objectMapViewerWindow = new EinWindow(NULL, ms);
+  ms->config.objectMapViewerWindow->setWindowTitle("Object Map Viewer " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.objectMapViewerWindow);
+
+
+  ms->config.stereoViewerWindow = new EinWindow(NULL, ms);
+  ms->config.stereoViewerWindow->setWindowTitle("Stereo Viewer " + ms->config.left_or_right_arm);
+  einMainWindow->addWindow(ms->config.stereoViewerWindow);
+
+
+  ms->config.backgroundWindow = new EinWindow(NULL, ms);
+  ms->config.backgroundWindow->setWindowTitle("Background Mean View " + ms->config.left_or_right_arm);
+  ms->config.backgroundWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.backgroundWindow);
+
+  ms->config.backgroundMapWindow = new GaussianMapWindow(NULL, ms);
+  ms->config.backgroundMapWindow->setWindowTitle("Background View " + ms->config.left_or_right_arm);
+  ms->config.backgroundMapWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.backgroundMapWindow);
+
+  ms->config.observedWindow = new EinWindow(NULL, ms);
+  ms->config.observedWindow->setWindowTitle("Observed Mean View " + ms->config.left_or_right_arm);
+  ms->config.observedWindow->setMouseCallBack(mapCallbackFunc, ms);
+  ms->config.observedWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.observedWindow);
+
+  ms->config.observedStdDevWindow = new EinWindow(NULL, ms);
+  ms->config.observedStdDevWindow->setWindowTitle("Observed Std Dev View " + ms->config.left_or_right_arm);
+  ms->config.observedStdDevWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.observedStdDevWindow);
+
+
+  ms->config.observedMapWindow = new GaussianMapWindow(NULL, ms);
+  ms->config.observedMapWindow->setWindowTitle("Observed View " + ms->config.left_or_right_arm);
+  ms->config.observedMapWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.observedMapWindow);
+
+
+
+
+
+  ms->config.predictedWindow = new EinWindow(NULL, ms);
+  ms->config.predictedWindow->setWindowTitle("Predicted Mean View " + ms->config.left_or_right_arm);
+  ms->config.predictedWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.predictedWindow);
+
+
+  ms->config.predictedStdDevWindow = new EinWindow(NULL, ms);
+  ms->config.predictedStdDevWindow->setWindowTitle("Predicted Std Dev View " + ms->config.left_or_right_arm);
+  ms->config.predictedStdDevWindow->setVisible(false);
+  einMainWindow->addWindow(ms->config.predictedStdDevWindow);
+
+
+  ms->config.predictedMapWindow = new GaussianMapWindow(NULL, ms);
+  ms->config.predictedMapWindow->setWindowTitle("Predicted View " + ms->config.left_or_right_arm);
+  ms->config.predictedMapWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.predictedMapWindow);
+
+
+  ms->config.streamViewerWindow = new StreamViewerWindow(NULL, ms);
+  ms->config.streamViewerWindow->setWindowTitle("Stream Viewer " + ms->config.left_or_right_arm);
+  ms->config.streamViewerWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.streamViewerWindow);
+
+  ms->config.discrepancyViewerWindow = new DiscrepancyWindow(NULL, ms);
+  ms->config.discrepancyViewerWindow->setWindowTitle("Discrepancy " + ms->config.left_or_right_arm);
+  ms->config.discrepancyViewerWindow->setVisible(true);
+  einMainWindow->addWindow(ms->config.discrepancyViewerWindow);
+
+  ms->config.discrepancyWindow = new EinWindow(NULL, ms);
+  ms->config.discrepancyWindow->setWindowTitle("Discrepancy RGB View " + ms->config.left_or_right_arm);
+  ms->config.discrepancyWindow->setVisible(false);
+  einMainWindow->addWindow(ms->config.discrepancyWindow);
+
+
+  ms->config.discrepancyDensityWindow = new EinWindow(NULL, ms);
+  ms->config.discrepancyDensityWindow->setWindowTitle("Discrepancy Density View " + ms->config.left_or_right_arm);
+  ms->config.discrepancyDensityWindow->setVisible(false);
+  einMainWindow->addWindow(ms->config.discrepancyDensityWindow);
+
+
+  ms->config.zWindow = new EinWindow(NULL, ms);
+  ms->config.zWindow->setWindowTitle("Gaussian Map Z View " + ms->config.left_or_right_arm);
+  ms->config.zWindow->setVisible(false);
+  einMainWindow->addWindow(ms->config.zWindow);
+
+
+
+
+  //createTrackbar("post_density_sigma", ms->config.densityViewerName, &ms->config.postDensitySigmaTrackbarVariable, 40);
+  //createTrackbar("canny_lo", ms->config.densityViewerName, &ms->config.loTrackbarVariable, 100);
+  //createTrackbar("canny_hi", ms->config.densityViewerName, &ms->config.hiTrackbarVariable, 100);
+
+
+}
+
 int opencvError (int status, const char *func_name, const char *err_msg, const char *file_name, int line, void *userdata) {
   cout << "OpenCV error: " << func_name << " with message " << err_msg << endl;
   cout << "File: " << file_name << " line: " << line << endl;
@@ -8749,13 +8918,22 @@ int main(int argc, char **argv) {
 
   srand(time(NULL));
 
-  if (argc < 2) {
-    cout << "Must pass at least two arguments.  Received " << argc;
-    ROS_ERROR("ein <left|right|both>");
+  if (argc < 4) {
+    cout << "Must pass at least four arguments.  Received " << argc;
+    ROS_ERROR("ein <physical|simulated|snoop> <left|right|both> <gui|nogui>");
     return -1;
   }
 
-  string left_or_right_arm = argv[1];
+  string robot_mode = argv[1];
+  if (robot_mode != "simulated" && robot_mode != "physical" && robot_mode != "snoop")  {
+    cout << "Invalid mode: " << robot_mode << endl;
+    ROS_ERROR("Must pass ein <physical|simulated|snoop> <left|right|both> <gui|nogui>");
+    return -1;
+  }
+
+  cout << "((1))";
+
+  string left_or_right_arm = argv[2];
 
   vector<string> arm_names;
 
@@ -8769,9 +8947,23 @@ int main(int argc, char **argv) {
   } else {
     ROS_ERROR("Must pass left, right, or both.");
   }
+  bool showgui;
+  string gui_or_nogui = argv[3];
+  if (gui_or_nogui == "gui") {
+    showgui = true;
+  } else if (gui_or_nogui == "nogui") {
+    showgui = false;
+  } else {
+    ROS_ERROR("Must pass gui or nogui");
+  }
 
   QCoreApplication * a;
-  a = new QCoreApplication(argc, argv);
+
+  if (showgui) {
+    a = new QApplication(argc, argv);
+  } else {
+    a = new QCoreApplication(argc, argv);
+  }
 
 
 
@@ -8784,6 +8976,14 @@ int main(int argc, char **argv) {
     programName = string(PROGRAM_NAME);
   }
 
+  if (robot_mode == "snoop" || robot_mode == "simulated") {
+    ros::init(argc, argv, programName, ros::init_options::AnonymousName | ros::init_options::NoSigintHandler);
+  } else {
+    ros::init(argc, argv, programName, ros::init_options::NoSigintHandler);
+  }
+  ros::NodeHandle n("~");
+
+
   std::ifstream ifs("src/ein/VERSION");
   std::string ein_software_version( (std::istreambuf_iterator<char>(ifs) ),
                                     (std::istreambuf_iterator<char>()    ) );
@@ -8795,7 +8995,16 @@ int main(int argc, char **argv) {
     MachineState * ms = new MachineState();
     ms->config.ein_software_version = ein_software_version;
     ms->config.robot_mode = robot_mode;
-    ms->config.currentRobotMode = PHYSICAL;
+    if (ms->config.robot_mode == "simulated") {
+      ms->config.currentRobotMode = SIMULATED;
+    } else if (ms->config.robot_mode == "physical") {
+      ms->config.currentRobotMode = PHYSICAL;
+    } else if (ms->config.robot_mode == "snoop") {
+      ms->config.currentRobotMode = SNOOP;
+    } else {
+      cout << "bad mode: " << ms->config.robot_mode << endl;
+      assert(0);
+    }
     
     machineStates.push_back(ms);
     if (left_or_right == "left") {
@@ -8814,8 +9023,26 @@ int main(int argc, char **argv) {
     ms->config.showgui = showgui;
   }
 
-  timer->start(0);
+  if (showgui) {
+    einMainWindow = new MainWindow(NULL, right_arm, left_arm);
+
+    for(int i = 0; i < machineStates.size(); i++) {
+      initializeArmGui(machineStates[i], einMainWindow);
+    }
+
+    einMainWindow->show();
+    einMainWindow->setObjectMapViewMouseCallBack(objectMapCallbackFunc, &machineStates);
+    einMainWindow->setWindowTitle(QString::fromStdString("Ein " + ein_software_version + " Main Window (" + robot_mode + " " + left_or_right_arm + ")"));
+  }
+
+
+  //timer->start(0);
   qRegisterMetaType<Mat>("Mat");
+
+  int cudaCount = cuda::getCudaEnabledDeviceCount();
+  cout << "cuda count: " << cudaCount << endl;;
+
+  cv::redirectError(opencvError, NULL, NULL);
 
   //a.exec();
   signal(SIGINT, signalHandler);

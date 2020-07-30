@@ -1,4 +1,5 @@
 #include "word.h"
+#include <opencv2/imgproc.hpp>
 #include "ein.h"
 #include <sstream>
 #include <boost/algorithm/string.hpp>
@@ -383,7 +384,7 @@ void renderCoreView(MachineState * ms) {
   cv::Scalar labelColor(160,160,160);
 
   cv::Point ciAnchor(10,50);
-  putText(coreImage, "Current Registers: ", ciAnchor, MY_FONT, 0.5, labelColor, 1.0);
+  cv::putText(coreImage, "Current Registers: ", ciAnchor, MY_FONT, 0.5, labelColor, 1.0);
 
   char buf[256];
   cv::Point lAnchor(170,50);
@@ -394,7 +395,7 @@ void renderCoreView(MachineState * ms) {
   } else {
     lText += "NULL";
   }
-  putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
+  cv::putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
 
   lAnchor.y += 20;
   lText = "";
@@ -404,7 +405,7 @@ void renderCoreView(MachineState * ms) {
   lText += " GG: ";
   sprintf(buf, "%d", ms->config.currentGraspGear);
   lText += buf;
-  putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
+  cv::putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
 
   lAnchor.y += 20;
   lText = "";
@@ -414,11 +415,11 @@ void renderCoreView(MachineState * ms) {
   lText += " epRB: ";
   sprintf(buf, "%+.02d/%d", ms->config.epRingBufferEnd-ms->config.epRingBufferStart, ms->config.epRingBufferSize);
   lText += buf;
-  putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
+  cv::putText(coreImage, lText, lAnchor, MY_FONT, 0.5, dataColor, 2.0);
 
   int stackRowY = lAnchor.y + 40; 
   cv::Point csAnchor(10,stackRowY);
-  putText(coreImage, "Call Stack: ", csAnchor, MY_FONT, 0.5, labelColor, 1.0);
+  cv::putText(coreImage, "Call Stack: ", csAnchor, MY_FONT, 0.5, labelColor, 1.0);
   
   int instructionsPerRow = 1;
   int rowAnchorStep = 25;
@@ -437,7 +438,7 @@ void renderCoreView(MachineState * ms) {
       outRowText += " ";
     }
 
-    putText(coreImage, outRowText, rowAnchor, MY_FONT, 0.5, dataColor, 2.0);
+    cv::putText(coreImage, outRowText, rowAnchor, MY_FONT, 0.5, dataColor, 2.0);
     rowAnchor.y += rowAnchorStep;
     if (rowAnchor.y >= coreImage.rows) {
       break;
