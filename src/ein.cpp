@@ -8749,8 +8749,8 @@ int main(int argc, char **argv) {
 
   srand(time(NULL));
 
-  if (argc < 1) {
-    cout << "Must pass at least one arguments.  Received " << argc;
+  if (argc < 2) {
+    cout << "Must pass at least two arguments.  Received " << argc;
     ROS_ERROR("ein <left|right|both>");
     return -1;
   }
