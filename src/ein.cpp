@@ -29,7 +29,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <signal.h>
-
+#include <opencv2/imgproc.hpp>
 #include <ros/package.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <object_recognition_msgs/RecognizedObjectArray.h>
@@ -37,8 +37,8 @@
 
 #include <cv.h>
 #include <ml.h>
-#include <opencv2/gpu/gpu.hpp>
-
+#include <opencv2/core/cuda.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 //#define DEBUG_RING_BUFFER
 
@@ -639,13 +639,13 @@ void writeThumbnail(MachineState * ms, int idx, string thumbnail_file_path) {
   {
     string loadPath = thumbnail_file_path + "/ein/servoImages/aerialHeight0PreGradients.png";
     string outPath = thumbnail_file_path + "/thumbnail.png";
-    Mat tmp = imread(loadPath);
+    Mat tmp = cv::imread(loadPath);
 
     std::vector<int> args;
     args.push_back(CV_IMWRITE_PNG_COMPRESSION);
     args.push_back(ms->config.globalPngCompression);
 
-    imwrite(outPath, tmp, args);
+    cv::imwrite(outPath, tmp, args);
   }
 }
 
@@ -2361,13 +2361,13 @@ void MachineState::rangeCallback(const sensor_msgs::Range& range) {
       char buff[256];
       sprintf(buff, "            Hz: %.2f", ms->config.aveFrequency);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
     }
     {
       char buff[256];
       sprintf(buff, "Hz: %.2f", ms->config.aveFrequencyRange);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
     }
   }
 
@@ -3438,7 +3438,7 @@ void renderObjectMapViewOneArm(MachineState * ms) {
       rectangle(ms->config.objectMapViewerImage, outTop, outBot, 
 		CV_RGB(0, 255, 0));
 
-      putText(ms->config.objectMapViewerImage, sprite.name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 255, 196), 2.0);
+      cv::putText(ms->config.objectMapViewerImage, sprite.name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 255, 196), 2.0);
     }
   }
   // draw blue boxes
@@ -3505,7 +3505,7 @@ void renderObjectMapViewOneArm(MachineState * ms) {
               CV_RGB(nonBlueAmount, nonBlueAmount, 128+nonBlueAmount));
     }
 
-    putText(ms->config.objectMapViewerImage, class_name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 196, 255), 2.0);
+    cv::putText(ms->config.objectMapViewerImage, class_name, objectPoint, MY_FONT, 0.5, CV_RGB(196, 196, 255), 2.0);
   }
 
   cv::Scalar color;
@@ -3648,13 +3648,13 @@ void renderRangeogramView(MachineState * ms) {
       char buff[256];
       sprintf(buff, "            Hz: %.2f", ms->config.aveFrequency);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(160,0,0), 1.0);
     }
     {
       char buff[256];
       sprintf(buff, "Hz: %.2f", ms->config.aveFrequencyRange);
       string fpslabel(buff);
-      putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
+      cv::putText(ms->config.rangeogramImage, fpslabel, text_anchor, MY_FONT, 1.0, Scalar(0,0,160), 1.0);
     }
   }
   ms->config.rangeogramWindow->updateImage(ms->config.rangeogramImage);
@@ -5870,7 +5870,7 @@ void bowGetFeatures(MachineState * ms, std::string classDir, const char *classNa
         char filename[1024];
         sprintf(filename, "%s%s/ein/detectionCrops/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -5932,7 +5932,7 @@ void kNNGetFeatures(MachineState * ms, std::string classDir, const char *classNa
         char filename[1024];
         sprintf(filename, "%s%s/ein/detectionCrops/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -6221,7 +6221,7 @@ void posekNNGetFeatures(MachineState * ms, std::string classDir, const char *cla
         char filename[1024];
         sprintf(filename, "%s%s/rgbPose/%s", classDir.c_str(), className, epdf->d_name);
         Mat image;
-        image = imread(filename);
+        image = cv::imread(filename);
 	Size sz = image.size();
 	int cropW = sz.width;
 	int cropH = sz.height;
@@ -6566,7 +6566,7 @@ void goFindBlueBoxes(MachineState * ms) {
   delete gBoxComponentLabels;
 }
 
-
+/*
 void goClassifyBlueBoxes(MachineState * ms) {
   //cout << "entered gCBB()" << endl; cout.flush();
   Size sz = ms->config.objectViewerImage.size();
@@ -6665,7 +6665,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
       if (!descriptors.empty() && !keypoints.empty()) {
       
 	appendColorHist(yCrCb_image, keypoints, descriptors, descriptors2);
-	label = ms->config.kNN->find_nearest(descriptors2, param_numNeighbors);
+	label = ms->config.kNN->findNearest(descriptors2, param_numNeighbors);
 	ms->config.bLabels[c] = label;
       }
     } else if (ms->config.chosen_feature == OPPONENTSIFTBOW_GLOBALCOLOR_HIST) {
@@ -6714,8 +6714,8 @@ void goClassifyBlueBoxes(MachineState * ms) {
       if (!descriptors.empty() && !keypoints.empty()) {
       
 	//appendColorHist(yCrCb_image, keypoints, descriptors, descriptors2);
-	//label = kNN->find_nearest(descriptors2,k);
-	label = ms->config.kNN->find_nearest(descriptors, param_numNeighbors);
+	//label = kNN->findNearest(descriptors2,k);
+	label = ms->config.kNN->findNearest(descriptors, param_numNeighbors);
 	ms->config.bLabels[c] = label;
       }
     } else if (ms->config.chosen_feature == GRADIENT) {
@@ -6775,7 +6775,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 	}
       }
 
-      label = ms->config.kNN->find_nearest(descriptorsG, param_numNeighbors);
+      label = ms->config.kNN->findNearest(descriptorsG, param_numNeighbors);
       ms->config.bLabels[c] = label;
     } else if (ms->config.chosen_feature == OPPONENT_COLOR_GRADIENT) {
       processImage(crop, gray_image, yCrCb_image, ms->config.sobel_sigma);
@@ -6902,7 +6902,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 	}
       }
 
-      label = ms->config.kNN->find_nearest(descriptorsCbCr, param_numNeighbors);
+      label = ms->config.kNN->findNearest(descriptorsCbCr, param_numNeighbors);
       ms->config.bLabels[c] = label;
     }
 
@@ -6981,7 +6981,7 @@ void goClassifyBlueBoxes(MachineState * ms) {
 
 }
 
-
+*/
 
 void loadROSParamsFromArgs(MachineState * ms) {
   ros::NodeHandle nh("~");
@@ -7055,14 +7055,14 @@ void nodeInit(MachineState * ms) {
 
 }
 
-
+/*
 void detectorsInit(MachineState * ms) {
 
-  // XXX TODO this function should reinit the structures if this function is to be called multiple times
+   XXX TODO this function should reinit the structures if this function is to be called multiple times
 
-  // SIFT 
-  //ms->config.detector = new SiftFeatureDetector(0, 3, 0.04, 10, 1.6);
-  //cout << "ms->config.chosen_feature: " << ms->config.chosen_feature << endl;
+   SIFT 
+  ms->config.detector = new SiftFeatureDetector(0, 3, 0.04, 10, 1.6);
+  cout << "ms->config.chosen_feature: " << ms->config.chosen_feature << endl;
   if (ms->config.detector == NULL)
     ms->config.detector = new FastFeatureDetector(4);
 
@@ -7083,10 +7083,10 @@ void detectorsInit(MachineState * ms) {
     ms->config.retrain_vocab = 0;
   }
 
-  // BOW time
+   BOW time
   ms->config.bowTrainer = new BOWKMeansTrainer(ms->config.vocabNumWords);
 
-  // read the class image data
+   read the class image data
   string dot(".");
   string dotdot("..");
 
@@ -7100,12 +7100,12 @@ void detectorsInit(MachineState * ms) {
   cout << "featuresPath: " << featuresPath << endl;
   cout << "labelsPath: " << labelsPath << endl;
 
-  string bufstr; // Have a buffer string
+  string bufstr;  Have a buffer string
 
   int numCachedClasses = 0;
 
   if (ms->config.rewrite_labels) {
-    // load cached labels 
+     load cached labels 
     vector<string> classCacheLabels;
     vector<string> classCachePoseModels;
     if (ms->config.cache_prefix.size() > 0) {
@@ -7170,7 +7170,7 @@ void detectorsInit(MachineState * ms) {
     if (ms->config.grandTotalDescriptors < ms->config.vocabNumWords) {
       cout << "Fewer descriptors than words in the vocab!?... This will never work, cease training. Duplicate RGB images if you must." << endl;
       cout << "Label file may now be corrupt!" << endl;
-      // TODO XXX we shouldn't write any files until we know it will succeed
+       TODO XXX we shouldn't write any files until we know it will succeed
       return;
     }
 
@@ -7208,7 +7208,7 @@ void detectorsInit(MachineState * ms) {
   ms->config.classQuaternions.resize(ms->config.numClasses);
 
   if (ms->config.reextract_knn) {
-    //for (int i = 0; i < numNewClasses; i++) 
+    for (int i = 0; i < numNewClasses; i++) 
     for (int i = numCachedClasses; i < ms->config.numClasses; i++) 
     {
       cout << "Getting kNN features for class " << ms->config.classLabels[i] 
@@ -7221,8 +7221,8 @@ void detectorsInit(MachineState * ms) {
       }
     }
 
-    // load cached kNN features 
-    // XXX experimental handling of G pose models
+     load cached kNN features 
+     XXX experimental handling of G pose models
     Mat kNNCachefeatures;
     Mat kNNCachelabels;
     if (ms->config.cache_prefix.size() > 0) {
@@ -7257,7 +7257,7 @@ void detectorsInit(MachineState * ms) {
     fsfO << "features" << kNNfeatures;
     fsfO << "labels" << kNNlabels;
 
-    // TODO also cache the features for the pose models
+     TODO also cache the features for the pose models
 
     for (int i = 0; i < ms->config.numClasses; i++) {
       if (ms->config.classPoseModels[i].compare("G") == 0) {
@@ -7305,7 +7305,7 @@ void detectorsInit(MachineState * ms) {
     // seeing this can be distressing
     //cout << "There is a problem with kNN features, cannot initialize detector and files may be corrupt." << endl;
   } else {
-    ms->config.kNN = new CvKNearest(kNNfeatures, kNNlabels);
+    ms->config.kNN = new cv::ml::KNearest(kNNfeatures, kNNlabels);
     cout << "done." << endl;
     for (int i = 0; i < ms->config.numClasses; i++) {
       if (ms->config.classPoseModels[i].compare("G") == 0) {
@@ -7316,7 +7316,7 @@ void detectorsInit(MachineState * ms) {
     }
   }
 }
-
+*/
 
 void tryToLoadRangeMap(MachineState * ms, std::string classDir, const char *className, int i) {
 
@@ -8706,7 +8706,7 @@ void initializeArm(MachineState * ms, string left_or_right_arm) {
 
 
   nodeInit(ms);
-  detectorsInit(ms);
+  //detectorsInit(ms);
   irInit(ms);
 
 
@@ -8726,175 +8726,6 @@ void initializeArm(MachineState * ms, string left_or_right_arm) {
 
 
   initializeMachine(ms);
-
-}
-
-void initializeArmGui(MachineState * ms, MainWindow * einMainWindow) {
-
-//  ms->config.gripperMaskFirstContrastWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskFirstContrastWindow->setWindowTitle("Gripper Mask First Contrast " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskFirstContrastWindow);
-//
-//  ms->config.gripperMaskSecondContrastWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskSecondContrastWindow->setWindowTitle("Gripper Mask Second Contrast " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskSecondContrastWindow);
-//
-//  ms->config.gripperMaskDifferenceWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskDifferenceWindow->setWindowTitle("Gripper Mask Difference " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskDifferenceWindow);
-//
-//  ms->config.gripperMaskVarianceWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskVarianceWindow->setWindowTitle("Gripper Mask Variance " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskVarianceWindow);
-//
-//  ms->config.gripperMaskMeanWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskMeanWindow->setWindowTitle("Gripper Mask Mean " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskMeanWindow);
-//
-//  ms->config.gripperMaskSquaresWindow = new EinWindow(NULL, ms);
-//  ms->config.gripperMaskSquaresWindow->setWindowTitle("Gripper Mask Squares " + ms->config.left_or_right_arm);
-//  einMainWindow->addWindow(ms->config.gripperMaskSquaresWindow);
-
-  ms->config.dogSnoutViewWindow = new EinWindow(NULL, ms);
-  ms->config.dogSnoutViewWindow->setWindowTitle("Dog Snout View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.dogSnoutViewWindow);
-  ms->config.dogSnoutViewWindow->setVisible(true);
-
-
-  ms->config.rangeogramWindow = new EinWindow(NULL, ms);
-  ms->config.rangeogramWindow->setWindowTitle("Rangeogram View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.rangeogramWindow);
-
-  ms->config.wristViewWindow = new EinWindow(NULL, ms);
-  ms->config.wristViewWindow->setWindowTitle("Wrist View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.wristViewWindow);
-  ms->config.wristViewWindow->setMouseCallBack(pilotCallbackFunc, ms);
-
-  ms->config.renderedWristViewWindow = new EinWindow(NULL, ms);
-  ms->config.renderedWristViewWindow->setWindowTitle("Rendered Wrist View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.renderedWristViewWindow);
-  ms->config.renderedWristViewWindow->setMouseCallBack(pilotCallbackFunc, ms);
-
-
-
-  ms->config.coreViewWindow = new EinWindow(NULL, ms);
-  ms->config.coreViewWindow->setWindowTitle("Core View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.coreViewWindow);
-  
-  
-  ms->config.faceViewWindow = new EinWindow(NULL, ms);
-  ms->config.faceViewWindow->setWindowTitle("Face View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.faceViewWindow);
-  
-
-  
-
-  ms->config.mapBackgroundViewWindow = new EinWindow(NULL, ms);
-  ms->config.mapBackgroundViewWindow->setWindowTitle("Hi Color Range Map View " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.mapBackgroundViewWindow);
-
-
-  ms->config.meanViewerWindow = new EinWindow(NULL, ms);
-  ms->config.meanViewerWindow->setWindowTitle("Mean Viewer " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.meanViewerWindow);
-
-  ms->config.objectViewerWindow = new EinWindow(NULL, ms);
-  ms->config.objectViewerWindow->setWindowTitle("Object Viewer " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.objectViewerWindow);
-
-  ms->config.objectMapViewerWindow = new EinWindow(NULL, ms);
-  ms->config.objectMapViewerWindow->setWindowTitle("Object Map Viewer " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.objectMapViewerWindow);
-
-
-  ms->config.stereoViewerWindow = new EinWindow(NULL, ms);
-  ms->config.stereoViewerWindow->setWindowTitle("Stereo Viewer " + ms->config.left_or_right_arm);
-  einMainWindow->addWindow(ms->config.stereoViewerWindow);
-
-
-  ms->config.backgroundWindow = new EinWindow(NULL, ms);
-  ms->config.backgroundWindow->setWindowTitle("Background Mean View " + ms->config.left_or_right_arm);
-  ms->config.backgroundWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.backgroundWindow);
-
-  ms->config.backgroundMapWindow = new GaussianMapWindow(NULL, ms);
-  ms->config.backgroundMapWindow->setWindowTitle("Background View " + ms->config.left_or_right_arm);
-  ms->config.backgroundMapWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.backgroundMapWindow);
-
-  ms->config.observedWindow = new EinWindow(NULL, ms);
-  ms->config.observedWindow->setWindowTitle("Observed Mean View " + ms->config.left_or_right_arm);
-  ms->config.observedWindow->setMouseCallBack(mapCallbackFunc, ms);
-  ms->config.observedWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.observedWindow);
-
-  ms->config.observedStdDevWindow = new EinWindow(NULL, ms);
-  ms->config.observedStdDevWindow->setWindowTitle("Observed Std Dev View " + ms->config.left_or_right_arm);
-  ms->config.observedStdDevWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.observedStdDevWindow);
-
-
-  ms->config.observedMapWindow = new GaussianMapWindow(NULL, ms);
-  ms->config.observedMapWindow->setWindowTitle("Observed View " + ms->config.left_or_right_arm);
-  ms->config.observedMapWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.observedMapWindow);
-
-
-
-
-
-  ms->config.predictedWindow = new EinWindow(NULL, ms);
-  ms->config.predictedWindow->setWindowTitle("Predicted Mean View " + ms->config.left_or_right_arm);
-  ms->config.predictedWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.predictedWindow);
-
-
-  ms->config.predictedStdDevWindow = new EinWindow(NULL, ms);
-  ms->config.predictedStdDevWindow->setWindowTitle("Predicted Std Dev View " + ms->config.left_or_right_arm);
-  ms->config.predictedStdDevWindow->setVisible(false);
-  einMainWindow->addWindow(ms->config.predictedStdDevWindow);
-
-
-  ms->config.predictedMapWindow = new GaussianMapWindow(NULL, ms);
-  ms->config.predictedMapWindow->setWindowTitle("Predicted View " + ms->config.left_or_right_arm);
-  ms->config.predictedMapWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.predictedMapWindow);
-
-
-  ms->config.streamViewerWindow = new StreamViewerWindow(NULL, ms);
-  ms->config.streamViewerWindow->setWindowTitle("Stream Viewer " + ms->config.left_or_right_arm);
-  ms->config.streamViewerWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.streamViewerWindow);
-
-  ms->config.discrepancyViewerWindow = new DiscrepancyWindow(NULL, ms);
-  ms->config.discrepancyViewerWindow->setWindowTitle("Discrepancy " + ms->config.left_or_right_arm);
-  ms->config.discrepancyViewerWindow->setVisible(true);
-  einMainWindow->addWindow(ms->config.discrepancyViewerWindow);
-
-  ms->config.discrepancyWindow = new EinWindow(NULL, ms);
-  ms->config.discrepancyWindow->setWindowTitle("Discrepancy RGB View " + ms->config.left_or_right_arm);
-  ms->config.discrepancyWindow->setVisible(false);
-  einMainWindow->addWindow(ms->config.discrepancyWindow);
-
-
-  ms->config.discrepancyDensityWindow = new EinWindow(NULL, ms);
-  ms->config.discrepancyDensityWindow->setWindowTitle("Discrepancy Density View " + ms->config.left_or_right_arm);
-  ms->config.discrepancyDensityWindow->setVisible(false);
-  einMainWindow->addWindow(ms->config.discrepancyDensityWindow);
-
-
-  ms->config.zWindow = new EinWindow(NULL, ms);
-  ms->config.zWindow->setWindowTitle("Gaussian Map Z View " + ms->config.left_or_right_arm);
-  ms->config.zWindow->setVisible(false);
-  einMainWindow->addWindow(ms->config.zWindow);
-
-
-
-
-  //createTrackbar("post_density_sigma", ms->config.densityViewerName, &ms->config.postDensitySigmaTrackbarVariable, 40);
-  //createTrackbar("canny_lo", ms->config.densityViewerName, &ms->config.loTrackbarVariable, 100);
-  //createTrackbar("canny_hi", ms->config.densityViewerName, &ms->config.hiTrackbarVariable, 100);
-
 
 }
 
@@ -8918,20 +8749,13 @@ int main(int argc, char **argv) {
 
   srand(time(NULL));
 
-  if (argc < 4) {
-    cout << "Must pass at least four arguments.  Received " << argc;
-    ROS_ERROR("ein <physical|simulated|snoop> <left|right|both> <gui|nogui>");
+  if (argc < 1) {
+    cout << "Must pass at least one arguments.  Received " << argc;
+    ROS_ERROR("ein <left|right|both>");
     return -1;
   }
 
-  string robot_mode = argv[1];
-  if (robot_mode != "simulated" && robot_mode != "physical" && robot_mode != "snoop")  {
-    cout << "Invalid mode: " << robot_mode << endl;
-    ROS_ERROR("Must pass ein <physical|simulated|snoop> <left|right|both> <gui|nogui>");
-    return -1;
-  }
-
-  string left_or_right_arm = argv[2];
+  string left_or_right_arm = argv[1];
 
   vector<string> arm_names;
 
@@ -8945,23 +8769,9 @@ int main(int argc, char **argv) {
   } else {
     ROS_ERROR("Must pass left, right, or both.");
   }
-  bool showgui;
-  string gui_or_nogui = argv[3];
-  if (gui_or_nogui == "gui") {
-    showgui = true;
-  } else if (gui_or_nogui == "nogui") {
-    showgui = false;
-  } else {
-    ROS_ERROR("Must pass gui or nogui");
-  }
 
   QCoreApplication * a;
-
-  if (showgui) {
-    a = new QApplication(argc, argv);
-  } else {
-    a = new QCoreApplication(argc, argv);
-  }
+  a = new QCoreApplication(argc, argv);
 
 
 
@@ -8974,14 +8784,6 @@ int main(int argc, char **argv) {
     programName = string(PROGRAM_NAME);
   }
 
-  if (robot_mode == "snoop" || robot_mode == "simulated") {
-    ros::init(argc, argv, programName, ros::init_options::AnonymousName | ros::init_options::NoSigintHandler);
-  } else {
-    ros::init(argc, argv, programName, ros::init_options::NoSigintHandler);
-  }
-  ros::NodeHandle n("~");
-
-
   std::ifstream ifs("src/ein/VERSION");
   std::string ein_software_version( (std::istreambuf_iterator<char>(ifs) ),
                                     (std::istreambuf_iterator<char>()    ) );
@@ -8993,16 +8795,7 @@ int main(int argc, char **argv) {
     MachineState * ms = new MachineState();
     ms->config.ein_software_version = ein_software_version;
     ms->config.robot_mode = robot_mode;
-    if (ms->config.robot_mode == "simulated") {
-      ms->config.currentRobotMode = SIMULATED;
-    } else if (ms->config.robot_mode == "physical") {
-      ms->config.currentRobotMode = PHYSICAL;
-    } else if (ms->config.robot_mode == "snoop") {
-      ms->config.currentRobotMode = SNOOP;
-    } else {
-      cout << "bad mode: " << ms->config.robot_mode << endl;
-      assert(0);
-    }
+    ms->config.currentRobotMode = PHYSICAL;
     
     machineStates.push_back(ms);
     if (left_or_right == "left") {
@@ -9021,26 +8814,8 @@ int main(int argc, char **argv) {
     ms->config.showgui = showgui;
   }
 
-  if (showgui) {
-    einMainWindow = new MainWindow(NULL, right_arm, left_arm);
-
-    for(int i = 0; i < machineStates.size(); i++) {
-      initializeArmGui(machineStates[i], einMainWindow);
-    }
-
-    einMainWindow->show();
-    einMainWindow->setObjectMapViewMouseCallBack(objectMapCallbackFunc, &machineStates);
-    einMainWindow->setWindowTitle(QString::fromStdString("Ein " + ein_software_version + " Main Window (" + robot_mode + " " + left_or_right_arm + ")"));
-  }
-
-
-  //timer->start(0);
+  timer->start(0);
   qRegisterMetaType<Mat>("Mat");
-
-  int cudaCount = gpu::getCudaEnabledDeviceCount();
-  cout << "cuda count: " << cudaCount << endl;;
-
-  cv::redirectError(opencvError, NULL, NULL);
 
   //a.exec();
   signal(SIGINT, signalHandler);
