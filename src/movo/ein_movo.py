@@ -97,8 +97,30 @@ class ein_movo:
   # Moves the selected end effector to the position specified.
   # Args is [the movement group for the arm being moved]
   def moveToEEPose(self ,data, i, incomingArgs):
-    mover = threading.Thread(target=self.movementThread, args=(data, i, incomingArgs))
-    mover.start()
+    # mover = threading.Thread(target=self.movementThread, args=(data, i, incomingArgs))
+    # mover.start()
+    acquired = self.movingLock.acquire(not self.moving)
+    if acquired:
+      self.moving = True
+      pose = PoseStamped()
+      
+      pose.pose.position.x = float(data[i - 7])
+      pose.pose.position.y = float(data[i - 6])
+      pose.pose.position.z = float(data[i - 5])
+      pose.pose.orientation.x = float(data[i - 4])
+      pose.pose.orientation.y = float(data[i - 3])
+      pose.pose.orientation.z = float(data[i - 2])
+      pose.pose.orientation.w = float(data[i - 1])
+
+      pose.header.frame_id = "base_link"
+      # Creates a pose target and then plans, finally submitting the plan for movement
+      incomingArgs[0].set_pose_target(pose)
+      result = incomingArgs[0].plan()
+      incomingArgs[0].go(wait=True)
+      self.movingLock.release()
+      self.moving = False
+    else:
+      pass
     return "Move End Effector"
 
   # Starts a thread so that recurrent messages to move don't block and be submitted
